@@ -8,7 +8,7 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TaskResponsetDto {
+public class TaskResponseDto {
     private String description;
     private LocalDate startDate;
     private LocalDate endDate;

@@ -2,7 +2,7 @@ package com.redone.taskflow.controllers;
 
 import com.redone.taskflow.demain.models.Task;
 import com.redone.taskflow.dto.taskDto.TaskRequestDto;
-import com.redone.taskflow.dto.taskDto.TaskResponsetDto;
+import com.redone.taskflow.dto.taskDto.TaskResponseDto;
 import com.redone.taskflow.services.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,11 +21,11 @@ public class TaskController {
         return taskService.addTask(taskRequestDto);
     }
     @PutMapping("update_task")
-    public TaskResponsetDto updateTask(@RequestBody TaskRequestDto taskRequestDto){
+    public TaskResponseDto updateTask(@RequestBody TaskRequestDto taskRequestDto){
         return null;
     }
     @DeleteMapping("delete_task")
-    public TaskResponsetDto deleteTask(@RequestBody TaskRequestDto taskRequestDto){
+    public TaskResponseDto deleteTask(@RequestBody TaskRequestDto taskRequestDto){
         return null;
     }
     @GetMapping("tasks")

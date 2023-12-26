@@ -24,7 +24,8 @@ public class Task {
     private TaskStatus status;
     private LocalDate startDate;
     private LocalDate endDate;
-    private Long assignedTo;
+
+    @ManyToOne
     private User user;
     @ManyToMany
     @JoinTable(

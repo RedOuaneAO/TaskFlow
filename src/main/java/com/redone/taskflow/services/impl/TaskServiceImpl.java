@@ -2,7 +2,7 @@ package com.redone.taskflow.services.impl;
 
 import com.redone.taskflow.demain.models.Task;
 import com.redone.taskflow.dto.taskDto.TaskRequestDto;
-import com.redone.taskflow.dto.taskDto.TaskResponsetDto;
+import com.redone.taskflow.dto.taskDto.TaskResponseDto;
 import com.redone.taskflow.mapper.TaskMapper;
 import com.redone.taskflow.repositories.TaskRepository;
 import com.redone.taskflow.services.TaskService;
@@ -24,8 +24,9 @@ public class TaskServiceImpl implements TaskService {
     public ResponseEntity<Map<String ,Object>> addTask(TaskRequestDto taskRequestDto) {
         Map<String,Object> response = new HashMap<String ,Object>();
         Task task = taskMapper.taskDtoToEntity(taskRequestDto);
+        System.out.println(task);
         taskRepository.save(task);
-        TaskResponsetDto taskResponsetDto= taskMapper.entityToTaskDto(task);
+        TaskResponseDto taskResponsetDto= taskMapper.entityToTaskDto(task);
         response.put("status", "success");
         response.put("message", "your Task is created successfuly ");
         response.put("Task",taskResponsetDto);
