@@ -2,6 +2,7 @@ package com.redone.taskflow.controllers;
 
 import com.redone.taskflow.demain.models.Task;
 import com.redone.taskflow.dto.taskDto.TaskRequestDto;
+import com.redone.taskflow.dto.taskDto.TaskRequestStatusDto;
 import com.redone.taskflow.dto.taskDto.TaskResponseDto;
 import com.redone.taskflow.services.TaskService;
 import jakarta.validation.Valid;
@@ -28,6 +29,10 @@ public class TaskController {
     @DeleteMapping("delete_task")
     public TaskResponseDto deleteTask(@RequestBody TaskRequestDto taskRequestDto){
         return null;
+    }
+    @PutMapping("task_status")
+    public ResponseEntity<Map<String,Object>> changeStatus(@RequestBody TaskRequestStatusDto taskRequestStatusDto){
+        return taskService.changeStatus(taskRequestStatusDto);
     }
     @GetMapping("tasks")
     public List<Task> getAll(){

@@ -1,11 +1,14 @@
 package com.redone.taskflow.demain.models;
 
+import com.redone.taskflow.demain.enums.TokenType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -26,5 +29,6 @@ public class User {
     private List<Task> task;
     @OneToMany(mappedBy="user")
     private List<Token> tokens;
+
 
 }
