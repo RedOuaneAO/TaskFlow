@@ -25,10 +25,12 @@ public class User {
     private String userName;
     private String password;
     private String email;
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user" , fetch = FetchType.EAGER)
     private List<Task> task;
-    @OneToMany(mappedBy="user")
+    @OneToMany(mappedBy="user" , fetch = FetchType.EAGER)
     private List<Token> tokens;
+
+
 
 
 }

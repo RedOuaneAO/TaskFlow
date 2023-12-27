@@ -23,4 +23,5 @@ public class Token {
     private LocalDate addDate;
     @ManyToOne
     private User user;
+
 }

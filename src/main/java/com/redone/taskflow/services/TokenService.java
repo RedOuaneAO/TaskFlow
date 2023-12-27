@@ -9,4 +9,5 @@ import java.util.List;
 @Service
 public interface TokenService {
    List<Token> generateToken(User user);
+   void refreshToken();
 }
