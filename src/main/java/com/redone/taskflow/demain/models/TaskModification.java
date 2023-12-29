@@ -1,5 +1,6 @@
 package com.redone.taskflow.demain.models;
 
+import com.redone.taskflow.demain.enums.ModificationStatue;
 import com.redone.taskflow.demain.enums.ModificationType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -20,6 +21,7 @@ public class TaskModification {
     @ManyToOne
     private User demandedBy;
     private ModificationType type;
+    private ModificationStatue statue;
     private LocalDate demandDate;
     @OneToOne
     private Task currentTask;

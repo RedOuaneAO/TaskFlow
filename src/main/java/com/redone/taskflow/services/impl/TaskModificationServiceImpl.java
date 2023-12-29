@@ -1,5 +1,6 @@
 package com.redone.taskflow.services.impl;
 
+import com.redone.taskflow.demain.enums.ModificationStatue;
 import com.redone.taskflow.demain.enums.ModificationType;
 import com.redone.taskflow.demain.enums.TokenType;
 import com.redone.taskflow.demain.models.Task;
@@ -33,24 +34,27 @@ public class TaskModificationServiceImpl implements TaskModificationService {
         Map<String ,Object> response = new HashMap<String , Object>();
         User user = userRepository.findById(modificationRequestDto.getDemandedBy()).orElseThrow(()->new RuntimeException("this user doesn't exist"));
         Task currentTask = taskRepository.findById(modificationRequestDto.getCurrentTask()).orElseThrow(()->new RuntimeException("this task doesn't exist"));
-        if(modificationRequestDto.getType().equals(ModificationType.REPLACE)){
-            Task replacementTask = taskRepository.findById(modificationRequestDto.getReplacementTask()).orElseThrow(()->new RuntimeException("this task doesn't exist"));
-            TaskModification taskModification = TaskModification.builder().demandedBy(user).currentTask(currentTask).replacementTask(replacementTask).type(modificationRequestDto.getType()).demandDate(LocalDate.now()).build();
-            Boolean tokenAvailable =tokensAvailablity(user , modificationRequestDto.getType());
-            if (tokenAvailable){
+        boolean tokenAvailable =tokensAvailablity(user , modificationRequestDto.getType());
+        if (tokenAvailable){
+            if(modificationRequestDto.getType().equals(ModificationType.REPLACE)){
+                Task replacementTask = taskRepository.findById(modificationRequestDto.getReplacementTask()).orElseThrow(()->new RuntimeException("this task doesn't exist"));
+                TaskModification taskModification = TaskModification.builder().demandedBy(user).currentTask(currentTask).statue(ModificationStatue.PENDING).replacementTask(replacementTask).type(modificationRequestDto.getType()).demandDate(LocalDate.now()).build();
                 modificationRepository.save(taskModification);
-                updateTokens(user);
-                response.put("state" , "success");
-                response.put("message", "your demand has been sent seccessfully");
             }else {
-                response.put("state" , "error");
-                response.put("message", "your don't have enought tokens");
+                TaskModification taskDelete = TaskModification.builder().demandedBy(user).currentTask(currentTask).statue(ModificationStatue.PENDING).type(modificationRequestDto.getType()).demandDate(LocalDate.now()).build();
+                modificationRepository.save(taskDelete);
             }
+            updateTokens(user ,modificationRequestDto.getType());
+            response.put("state" , "success");
+            response.put("message", "your demand has been sent seccessfully");
+        }else {
+            response.put("state" , "error");
+            response.put("message", "your don't have enought tokens");
         }
         return ResponseEntity.ok(response);
     }
 
-    private Boolean tokensAvailablity(User user, ModificationType type) {
+    private boolean tokensAvailablity(User user, ModificationType type) {
         List<Token> tokens = tokenRepository.findByUser(user);
         for (Token token:tokens){
             if (type.equals(ModificationType.REPLACE) && token.getTokenType().equals(TokenType.UPDATE) && token.getNumber()>0){
@@ -62,13 +66,15 @@ public class TaskModificationServiceImpl implements TaskModificationService {
         return false;
     }
 
-    private void updateTokens(User user) {
+    private void updateTokens(User user,ModificationType type) {
         List<Token> tokens = tokenRepository.findByUser(user);
         for (Token token:tokens){
-            if (token.getTokenType().equals(TokenType.UPDATE) && token.getNumber()>0){
+            if (type.equals(ModificationType.REPLACE) && token.getTokenType().equals(TokenType.UPDATE)){
                 token.setNumber(token.getNumber()-1);
-                tokenRepository.save(token);
+            }else if(type.equals(ModificationType.DELETE) && token.getTokenType().equals(TokenType.DELETE)){
+                token.setNumber(token.getNumber()-1);
             }
+            tokenRepository.save(token);
         }
     }
 }
