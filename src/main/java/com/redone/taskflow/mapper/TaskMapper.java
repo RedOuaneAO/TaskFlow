@@ -3,6 +3,8 @@ package com.redone.taskflow.mapper;
 import ch.qos.logback.core.model.ComponentModel;
 import com.redone.taskflow.demain.models.Tag;
 import com.redone.taskflow.demain.models.Task;
+import com.redone.taskflow.demain.models.User;
+import com.redone.taskflow.dto.taskDto.TaskAssigneDto;
 import com.redone.taskflow.dto.taskDto.TaskRequestDto;
 import com.redone.taskflow.dto.taskDto.TaskResponseDto;
 import org.mapstruct.*;
@@ -20,7 +22,6 @@ public interface TaskMapper {
     TaskResponseDto entityToTaskDto(Task task);
     @Mapping(target = "tags", source = "tags", qualifiedByName = "mapTags")
     Task taskDtoToEntity(TaskRequestDto taskRequestDto);
-
 
     @Named("mapTags")
     default List<Tag> mapTags(List<Long> tagIds) {

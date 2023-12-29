@@ -1,11 +1,14 @@
 package com.redone.taskflow.services.impl;
 
 import com.redone.taskflow.demain.models.Task;
+import com.redone.taskflow.demain.models.User;
+import com.redone.taskflow.dto.taskDto.TaskAssigneDto;
 import com.redone.taskflow.dto.taskDto.TaskRequestDto;
 import com.redone.taskflow.dto.taskDto.TaskRequestStatusDto;
 import com.redone.taskflow.dto.taskDto.TaskResponseDto;
 import com.redone.taskflow.mapper.TaskMapper;
 import com.redone.taskflow.repositories.TaskRepository;
+import com.redone.taskflow.repositories.UserRepository;
 import com.redone.taskflow.services.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,16 +16,15 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
     private  final TaskMapper taskMapper;
+    private final UserRepository userRepository;
     @Override
     public ResponseEntity<Map<String ,Object>> addTask(TaskRequestDto taskRequestDto) {
         Map<String,Object> response = new HashMap<String ,Object>();
@@ -39,8 +41,10 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<Task> getAllTasks() {
-        return taskRepository.findAll();
+    public List<TaskResponseDto> getAllTasks() {
+        List<Task> taskList =taskRepository.findAll();
+        List<TaskResponseDto> taskResponseDtos=taskList.stream().map(task -> taskMapper.entityToTaskDto(task)).collect(Collectors.toList());
+        return taskResponseDtos;
     }
 
     @Override
@@ -56,4 +60,17 @@ public class TaskServiceImpl implements TaskService {
         response.put("message" , "the status has been changed successufly");
         return ResponseEntity.ok(response);
     }
+
+    @Override
+    public ResponseEntity<Map<String, Object>> assignTask(TaskAssigneDto taskAssigneDto) {
+        Map<String,Object> response = new HashMap<String ,Object>();
+        User user = userRepository.findById(taskAssigneDto.getAssignedTo()).orElseThrow(()->new RuntimeException("this user doesn't exist"));
+        Task task= taskRepository.findById(taskAssigneDto.getTaskId()).orElseThrow(()->new RuntimeException("this task doesn't exist" ));
+        task.setAssignedTo(user);
+        taskRepository.save(task);
+        response.put("state" , "success");
+        response.put("message", "the task has been assigned to "+ user.getUserName());
+        return ResponseEntity.ok(response);
+    }
+
 }

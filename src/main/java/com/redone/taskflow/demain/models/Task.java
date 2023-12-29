@@ -24,6 +24,8 @@ public class Task {
     private TaskStatus status;
     private LocalDate startDate;
     private LocalDate endDate;
+    @ManyToOne
+    private User assignedTo;
 
     @ManyToOne
     private User user;

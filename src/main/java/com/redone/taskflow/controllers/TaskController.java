@@ -1,6 +1,7 @@
 package com.redone.taskflow.controllers;
 
 import com.redone.taskflow.demain.models.Task;
+import com.redone.taskflow.dto.taskDto.TaskAssigneDto;
 import com.redone.taskflow.dto.taskDto.TaskRequestDto;
 import com.redone.taskflow.dto.taskDto.TaskRequestStatusDto;
 import com.redone.taskflow.dto.taskDto.TaskResponseDto;
@@ -35,8 +36,13 @@ public class TaskController {
         return taskService.changeStatus(taskRequestStatusDto);
     }
     @GetMapping("tasks")
-    public List<Task> getAll(){
+    public List<TaskResponseDto> getAll(){
         return taskService.getAllTasks();
     }
+    @PutMapping("assign")
+    public ResponseEntity<Map<String , Object>> assignTask(@RequestBody TaskAssigneDto taskAssigneDto){
+        return taskService.assignTask(taskAssigneDto);
+    }
+
 
 }
