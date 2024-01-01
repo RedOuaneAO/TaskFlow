@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public interface TaskService {
@@ -20,5 +21,6 @@ public interface TaskService {
     ResponseEntity<Map<String,Object>> changeStatus(TaskRequestStatusDto taskRequestStatusDto);
 
     ResponseEntity<Map<String, Object>> assignTask(TaskAssigneDto taskAssigneDto);
+    Optional<Task> findById(Long id);
 
 }

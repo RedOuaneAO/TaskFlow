@@ -45,4 +45,14 @@ public class TokenServiceImpl implements TokenService {
             }
         }
     }
+
+    @Override
+    public List<Token> findByUser(User user) {
+        return tokenRepository.findByUser(user);
+    }
+
+    @Override
+    public Token save(Token token) {
+        return tokenRepository.save(token);
+    }
 }

@@ -27,10 +27,10 @@ public class TaskController {
     public TaskResponseDto updateTask(@RequestBody TaskRequestDto taskRequestDto){
         return null;
     }
-    @DeleteMapping("delete_task")
-    public TaskResponseDto deleteTask(@RequestBody TaskRequestDto taskRequestDto){
-        return null;
-    }
+//    @DeleteMapping("delete_task")
+//    public TaskResponseDto deleteTask(@RequestParam TaskDeleteDto ){
+//        return null;
+//    }
     @PutMapping("task_status")
     public ResponseEntity<Map<String,Object>> changeStatus(@RequestBody TaskRequestStatusDto taskRequestStatusDto){
         return taskService.changeStatus(taskRequestStatusDto);

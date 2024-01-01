@@ -10,4 +10,6 @@ import java.util.List;
 public interface TokenService {
    List<Token> generateToken(User user);
    void refreshToken();
+   List<Token> findByUser(User user);
+   Token save(Token token);
 }
