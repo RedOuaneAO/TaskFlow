@@ -12,5 +12,5 @@ public interface TaskModificationService {
 
     ResponseEntity<Map<String, Object>> getReplacementDemand();
 
-    ResponseEntity<Map<String, Object>> changeDemandStats(ModificationStatusDto modificationStatusDto);
+    ResponseEntity<Map<String, Object>> changeDemandStatus(ModificationStatusDto modificationStatusDto);
 }

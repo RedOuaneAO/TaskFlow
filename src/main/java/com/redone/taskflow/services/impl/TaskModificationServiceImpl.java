@@ -41,19 +41,22 @@ public class TaskModificationServiceImpl implements TaskModificationService {
     private Map<String ,Object> response = new HashMap<String , Object>();
     @Override
     public ResponseEntity<Map<String, Object>> taskReplacement(ModificationRequestDto modificationRequestDto) {
-        User user = userService.findById(modificationRequestDto.getDemandedBy()).orElseThrow(()->new RuntimeException("this user doesn't exist"));
+        User demandedBy = userService.findById(modificationRequestDto.getDemandedBy()).orElseThrow(()->new RuntimeException("this user doesn't exist"));
         Task currentTask = taskService.findById(modificationRequestDto.getCurrentTask()).orElseThrow(()->new RuntimeException("this task doesn't exist"));
-        boolean tokenAvailable =tokensAvailablity(user , modificationRequestDto.getType());
+        if(!currentTask.getAssignedTo().equals(demandedBy)){
+            throw new RuntimeException("the task you want to replace is already assign to another user");
+        }
+        boolean tokenAvailable =tokensAvailablity(demandedBy , modificationRequestDto.getType());
         if (tokenAvailable){
             if(modificationRequestDto.getType().equals(ModificationType.REPLACE)){
                 Task replacementTask = taskService.findById(modificationRequestDto.getReplacementTask()).orElseThrow(()->new RuntimeException("this task doesn't exist"));
-                TaskModification taskModification = TaskModification.builder().demandedBy(user).currentTask(currentTask).statue(ModificationStatue.PENDING).replacementTask(replacementTask).type(modificationRequestDto.getType()).demandDate(LocalDate.now()).build();
+                TaskModification taskModification = TaskModification.builder().demandedBy(demandedBy).currentTask(currentTask).statue(ModificationStatue.PENDING).replacementTask(replacementTask).type(modificationRequestDto.getType()).demandDate(LocalDate.now()).build();
                 modificationRepository.save(taskModification);
             }else {
-                TaskModification taskDelete = TaskModification.builder().demandedBy(user).currentTask(currentTask).statue(ModificationStatue.PENDING).type(modificationRequestDto.getType()).demandDate(LocalDate.now()).build();
+                TaskModification taskDelete = TaskModification.builder().demandedBy(demandedBy).currentTask(currentTask).statue(ModificationStatue.PENDING).type(modificationRequestDto.getType()).demandDate(LocalDate.now()).build();
                 modificationRepository.save(taskDelete);
             }
-            updateTokens(user ,modificationRequestDto.getType());
+            updateTokens(demandedBy ,modificationRequestDto.getType());
             response.put("state" , "success");
             response.put("message", "your demand has been sent seccessfully");
         }else {
@@ -73,9 +76,15 @@ public class TaskModificationServiceImpl implements TaskModificationService {
     }
 
     @Override
-    public ResponseEntity<Map<String, Object>> changeDemandStats(ModificationStatusDto modificationStatusDto) {
+    public ResponseEntity<Map<String, Object>> changeDemandStatus(ModificationStatusDto modificationStatusDto) {
         TaskModification taskModification = modificationRepository.findById(modificationStatusDto.getDemandId()).orElseThrow(()->new RuntimeException("this demand doesn't exist"));
         taskModification.setStatue(modificationStatusDto.getStatus());
+        Task currentTask = taskService.findById(taskModification.getCurrentTask().getId()).orElseThrow(()->new RuntimeException("the current Task is no longer exist"));
+        if(modificationStatusDto.getStatus().equals(ModificationStatue.ACCEPTED)){
+            Task replacementTask  = taskService.findById(taskModification.getReplacementTask().getId()).orElseThrow(()->new RuntimeException("the current Task is no longer exist"));
+            replacementTask.setAssignedTo(taskModification.getDemandedBy());
+            taskService.save(replacementTask);
+        }
         ModificationResponseDto responseDto = modificationMapper.entityToTaskModDto(modificationRepository.save(taskModification));
         response.put("status" ,"success");
         response.put("message" ,"the status has been changed successfuly");

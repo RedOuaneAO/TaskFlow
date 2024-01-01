@@ -6,6 +6,7 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class TaskAssigneDto {
     private Long taskId;
     private Long assignedTo;

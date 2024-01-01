@@ -26,6 +26,6 @@ public class TaskModificationController {
 
     @PutMapping("replacement_status")
     public ResponseEntity<Map<String ,Object>> changeDemandStats(@RequestBody ModificationStatusDto modificationStatusDto){
-        return taskModificationService.changeDemandStats(modificationStatusDto);
+        return taskModificationService.changeDemandStatus(modificationStatusDto);
     }
 }

@@ -13,6 +13,7 @@ import com.redone.taskflow.repositories.UserRepository;
 import com.redone.taskflow.services.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -80,9 +81,26 @@ public class TaskServiceImpl implements TaskService {
         return ResponseEntity.ok(response);
     }
 
+//    @Scheduled(cron = "*/5 * * * * *")
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void checkTasks(){
+        List<Task> taskList = taskRepository.findAll();
+        for (Task task:taskList) {
+            if(task.getEndDate().isBefore(LocalDate.now()) && !task.getStatus().equals(TaskStatus.DONE)){
+                task.setStatus(TaskStatus.NOT_COMPLETED);
+                taskRepository.save(task);
+            }
+        }
+
+    }
     @Override
     public Optional<Task> findById(Long id) {
         return taskRepository.findById(id);
+    }
+
+    @Override
+    public void save(Task task) {
+        taskRepository.save(task);
     }
 
 }

@@ -23,4 +23,5 @@ public interface TaskService {
     ResponseEntity<Map<String, Object>> assignTask(TaskAssigneDto taskAssigneDto);
     Optional<Task> findById(Long id);
 
+    void save(Task replacementTask);
 }
