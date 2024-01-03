@@ -53,6 +53,12 @@ public class TaskModificationServiceImpl implements TaskModificationService {
                 TaskModification taskModification = TaskModification.builder().demandedBy(demandedBy).currentTask(currentTask).statue(ModificationStatue.PENDING).replacementTask(replacementTask).type(modificationRequestDto.getType()).demandDate(LocalDate.now()).build();
                 modificationRepository.save(taskModification);
             }else {
+                if(currentTask.getUser().equals(demandedBy)){
+                    taskService.delete(currentTask);
+                    response.put("state" , "success");
+                    response.put("message", "The task has been Deleted seccessfully");
+                    return ResponseEntity.ok(response);
+                }
                 TaskModification taskDelete = TaskModification.builder().demandedBy(demandedBy).currentTask(currentTask).statue(ModificationStatue.PENDING).type(modificationRequestDto.getType()).demandDate(LocalDate.now()).build();
                 modificationRepository.save(taskDelete);
             }
@@ -81,9 +87,15 @@ public class TaskModificationServiceImpl implements TaskModificationService {
         taskModification.setStatue(modificationStatusDto.getStatus());
         Task currentTask = taskService.findById(taskModification.getCurrentTask().getId()).orElseThrow(()->new RuntimeException("the current Task is no longer exist"));
         if(modificationStatusDto.getStatus().equals(ModificationStatue.ACCEPTED)){
-            Task replacementTask  = taskService.findById(taskModification.getReplacementTask().getId()).orElseThrow(()->new RuntimeException("the current Task is no longer exist"));
-            replacementTask.setAssignedTo(taskModification.getDemandedBy());
-            taskService.save(replacementTask);
+            if( taskModification.getType().equals(ModificationType.REPLACE)){
+                Task replacementTask  = taskService.findById(taskModification.getReplacementTask().getId()).orElseThrow(()->new RuntimeException("this Task is no longer exist"));
+                currentTask.setAssignedTo(replacementTask.getAssignedTo());
+                replacementTask.setAssignedTo(taskModification.getDemandedBy());
+                taskService.save(replacementTask);
+                taskService.save(currentTask);
+            } else if (taskModification.getType().equals(ModificationType.DELETE)){
+                taskService.delete(currentTask);
+            }
         }
         ModificationResponseDto responseDto = modificationMapper.entityToTaskModDto(modificationRepository.save(taskModification));
         response.put("status" ,"success");

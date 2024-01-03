@@ -3,14 +3,12 @@ package com.redone.taskflow.services.impl;
 import com.redone.taskflow.demain.enums.TaskStatus;
 import com.redone.taskflow.demain.models.Task;
 import com.redone.taskflow.demain.models.User;
-import com.redone.taskflow.dto.taskDto.TaskAssigneDto;
-import com.redone.taskflow.dto.taskDto.TaskRequestDto;
-import com.redone.taskflow.dto.taskDto.TaskRequestStatusDto;
-import com.redone.taskflow.dto.taskDto.TaskResponseDto;
+import com.redone.taskflow.dto.taskDto.*;
 import com.redone.taskflow.mapper.TaskMapper;
 import com.redone.taskflow.repositories.TaskRepository;
 import com.redone.taskflow.repositories.UserRepository;
 import com.redone.taskflow.services.TaskService;
+import com.redone.taskflow.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -26,15 +24,16 @@ import java.util.stream.Collectors;
 public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
     private  final TaskMapper taskMapper;
-    private final UserRepository userRepository;
+    private final UserService userService;
+
     @Override
     public ResponseEntity<Map<String ,Object>> addTask(TaskRequestDto taskRequestDto) {
         Map<String,Object> response = new HashMap<String ,Object>();
         Task task = taskMapper.taskDtoToEntity(taskRequestDto);
-        if(taskRequestDto.getEndDate().minus(Period.ofDays(3)).isBefore(taskRequestDto.getStartDate())){
-            throw new RuntimeException("the end day must be in 3 day of start date");
+        if(taskRequestDto.getStartDate().minus(Period.ofDays(3)).isBefore(LocalDate.now())){
+            throw new RuntimeException("The task must be scheduled 3 days from today");
         }
-        task.setUser(User.builder().id(2L).build());
+        task.setUser(User.builder().id(1L).build());
         task.setStatus(TaskStatus.TODO);
         taskRepository.save(task);
         TaskResponseDto taskResponsetDto= taskMapper.entityToTaskDto(task);
@@ -68,9 +67,9 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public ResponseEntity<Map<String, Object>> assignTask(TaskAssigneDto taskAssigneDto) {
         Map<String,Object> response = new HashMap<String ,Object>();
-        User assignTo = userRepository.findById(taskAssigneDto.getAssignedTo()).orElseThrow(()->new RuntimeException("this user doesn't exist"));
+        User assignTo = userService.findById(taskAssigneDto.getAssignedTo()).orElseThrow(()->new RuntimeException("this user doesn't exist"));
         Task task= taskRepository.findById(taskAssigneDto.getTaskId()).orElseThrow(()->new RuntimeException("this task doesn't exist" ));
-        if(!task.getUser().equals(assignTo)){
+        if(!task.getUser().equals(assignTo) && !task.getUser().isAdmin()){
             response.put("status","You Dont Have permission to  assign a task to another user");
             return ResponseEntity.badRequest().body(response);
         }
@@ -101,6 +100,11 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public void save(Task task) {
         taskRepository.save(task);
+    }
+
+    @Override
+    public void delete(Task task) {
+        taskRepository.delete(task);
     }
 
 }

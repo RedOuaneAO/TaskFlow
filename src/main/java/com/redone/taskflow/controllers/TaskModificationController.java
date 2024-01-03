@@ -18,12 +18,10 @@ public class TaskModificationController {
     public ResponseEntity<Map<String ,Object>> taskReplacement(@RequestBody ModificationRequestDto modificationRequestDto){
         return taskModificationService.taskReplacement(modificationRequestDto);
     }
-
     @GetMapping("replacement_demand")
     public ResponseEntity<Map<String ,Object>> getAllReplacementDemand(){
         return taskModificationService.getReplacementDemand();
     }
-
     @PutMapping("replacement_status")
     public ResponseEntity<Map<String ,Object>> changeDemandStats(@RequestBody ModificationStatusDto modificationStatusDto){
         return taskModificationService.changeDemandStatus(modificationStatusDto);

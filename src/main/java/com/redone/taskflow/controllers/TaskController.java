@@ -1,10 +1,7 @@
 package com.redone.taskflow.controllers;
 
 import com.redone.taskflow.demain.models.Task;
-import com.redone.taskflow.dto.taskDto.TaskAssigneDto;
-import com.redone.taskflow.dto.taskDto.TaskRequestDto;
-import com.redone.taskflow.dto.taskDto.TaskRequestStatusDto;
-import com.redone.taskflow.dto.taskDto.TaskResponseDto;
+import com.redone.taskflow.dto.taskDto.*;
 import com.redone.taskflow.services.TaskService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,10 +24,6 @@ public class TaskController {
     public TaskResponseDto updateTask(@RequestBody TaskRequestDto taskRequestDto){
         return null;
     }
-//    @DeleteMapping("delete_task")
-//    public TaskResponseDto deleteTask(@RequestParam TaskDeleteDto ){
-//        return null;
-//    }
     @PutMapping("task_status")
     public ResponseEntity<Map<String,Object>> changeStatus(@RequestBody TaskRequestStatusDto taskRequestStatusDto){
         return taskService.changeStatus(taskRequestStatusDto);
@@ -43,6 +36,10 @@ public class TaskController {
     public ResponseEntity<Map<String , Object>> assignTask(@RequestBody TaskAssigneDto taskAssigneDto){
         return taskService.assignTask(taskAssigneDto);
     }
+//    @GetMapping("statistics")
+//    public ResponseEntity<Map<String , Object>> getStatistics(){
+//
+//    }
 
 
 }

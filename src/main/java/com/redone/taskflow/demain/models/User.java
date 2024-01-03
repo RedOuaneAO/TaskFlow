@@ -25,6 +25,7 @@ public class User {
     private String userName;
     private String password;
     private String email;
+    private boolean isAdmin;
     @OneToMany(mappedBy = "user" , fetch = FetchType.EAGER)
     private List<Task> task;
     @OneToMany(mappedBy="user" , fetch = FetchType.EAGER)

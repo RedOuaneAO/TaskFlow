@@ -1,10 +1,7 @@
 package com.redone.taskflow.services;
 
 import com.redone.taskflow.demain.models.Task;
-import com.redone.taskflow.dto.taskDto.TaskAssigneDto;
-import com.redone.taskflow.dto.taskDto.TaskRequestDto;
-import com.redone.taskflow.dto.taskDto.TaskRequestStatusDto;
-import com.redone.taskflow.dto.taskDto.TaskResponseDto;
+import com.redone.taskflow.dto.taskDto.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -24,4 +21,6 @@ public interface TaskService {
     Optional<Task> findById(Long id);
 
     void save(Task replacementTask);
+
+    void delete(Task task);
 }
