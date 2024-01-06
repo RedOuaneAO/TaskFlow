@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 public interface TaskMapper {
 
     TaskMapper INSTANCE = Mappers.getMapper(TaskMapper.class);
-
+    @Mapping(target = "assignedTo", source = "assignedTo", qualifiedByName = "mapUser")
     TaskResponseDto entityToTaskDto(Task task);
     @Mapping(target = "tags", source = "tags", qualifiedByName = "mapTags")
     Task taskDtoToEntity(TaskRequestDto taskRequestDto);
@@ -32,5 +32,12 @@ public interface TaskMapper {
             tags.add(tag);
         }
         return tags;
+    }
+    @Named("mapUser")
+    default String mapUser(User assignedTo){
+        if(assignedTo == null){
+            return "not assigned yet";
+        }
+        return assignedTo.getUserName();
     }
 }

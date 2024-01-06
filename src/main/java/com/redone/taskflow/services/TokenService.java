@@ -9,7 +9,7 @@ import java.util.List;
 @Service
 public interface TokenService {
    List<Token> generateToken(User user);
-   void refreshToken();
+   void refreshToken(User user);
    List<Token> findByUser(User user);
    Token save(Token token);
 }

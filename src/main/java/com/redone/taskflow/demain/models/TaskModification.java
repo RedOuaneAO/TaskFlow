@@ -9,6 +9,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Builder
 @Data
 @NoArgsConstructor
@@ -22,7 +24,7 @@ public class TaskModification {
     private User demandedBy;
     private ModificationType type;
     private ModificationStatue statue;
-    private LocalDate demandDate;
+    private LocalDateTime demandDate;
     @OneToOne
     private Task currentTask;
     @OneToOne

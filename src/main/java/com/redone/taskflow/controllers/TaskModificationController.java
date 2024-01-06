@@ -3,6 +3,7 @@ package com.redone.taskflow.controllers;
 import com.redone.taskflow.dto.taskModificationDto.ModificationRequestDto;
 import com.redone.taskflow.dto.taskModificationDto.ModificationStatusDto;
 import com.redone.taskflow.services.TaskModificationService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +16,7 @@ public class TaskModificationController {
     private final TaskModificationService taskModificationService;
 
     @PostMapping("task_change")
-    public ResponseEntity<Map<String ,Object>> taskReplacement(@RequestBody ModificationRequestDto modificationRequestDto){
+    public ResponseEntity<Map<String ,Object>> taskReplacement(@Valid  @RequestBody ModificationRequestDto modificationRequestDto){
         return taskModificationService.taskReplacement(modificationRequestDto);
     }
     @GetMapping("replacement_demand")

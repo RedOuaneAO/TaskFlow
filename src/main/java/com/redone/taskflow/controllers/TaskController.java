@@ -20,10 +20,6 @@ public class TaskController {
     public ResponseEntity<Map<String ,Object>> addTask(@Valid  @RequestBody TaskRequestDto taskRequestDto){
         return taskService.addTask(taskRequestDto);
     }
-    @PutMapping("update_task")
-    public TaskResponseDto updateTask(@RequestBody TaskRequestDto taskRequestDto){
-        return null;
-    }
     @PutMapping("task_status")
     public ResponseEntity<Map<String,Object>> changeStatus(@RequestBody TaskRequestStatusDto taskRequestStatusDto){
         return taskService.changeStatus(taskRequestStatusDto);
@@ -36,10 +32,4 @@ public class TaskController {
     public ResponseEntity<Map<String , Object>> assignTask(@RequestBody TaskAssigneDto taskAssigneDto){
         return taskService.assignTask(taskAssigneDto);
     }
-//    @GetMapping("statistics")
-//    public ResponseEntity<Map<String , Object>> getStatistics(){
-//
-//    }
-
-
 }

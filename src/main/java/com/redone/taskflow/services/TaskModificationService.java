@@ -9,8 +9,6 @@ import java.util.Map;
 @Service
 public interface TaskModificationService {
     ResponseEntity<Map<String, Object>> taskReplacement(ModificationRequestDto modificationRequestDto);
-
     ResponseEntity<Map<String, Object>> getReplacementDemand();
-
     ResponseEntity<Map<String, Object>> changeDemandStatus(ModificationStatusDto modificationStatusDto);
 }

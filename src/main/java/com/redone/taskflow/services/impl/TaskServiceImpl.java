@@ -4,6 +4,8 @@ import com.redone.taskflow.demain.enums.TaskStatus;
 import com.redone.taskflow.demain.models.Task;
 import com.redone.taskflow.demain.models.User;
 import com.redone.taskflow.dto.taskDto.*;
+import com.redone.taskflow.handler.customExceptions.TaskNotFoundException;
+import com.redone.taskflow.handler.customExceptions.UserNotFoundException;
 import com.redone.taskflow.mapper.TaskMapper;
 import com.redone.taskflow.repositories.TaskRepository;
 import com.redone.taskflow.repositories.UserRepository;
@@ -25,13 +27,16 @@ public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
     private  final TaskMapper taskMapper;
     private final UserService userService;
+    private Map<String,Object> response = new HashMap<String ,Object>();
 
     @Override
     public ResponseEntity<Map<String ,Object>> addTask(TaskRequestDto taskRequestDto) {
-        Map<String,Object> response = new HashMap<String ,Object>();
         Task task = taskMapper.taskDtoToEntity(taskRequestDto);
         if(taskRequestDto.getStartDate().minus(Period.ofDays(3)).isBefore(LocalDate.now())){
             throw new RuntimeException("The task must be scheduled 3 days from today");
+        }
+        if(taskRequestDto.getStartDate().isAfter(taskRequestDto.getEndDate())){
+            throw new RuntimeException(("The endDate shouldn't be before startDate"));
         }
         task.setUser(User.builder().id(1L).build());
         task.setStatus(TaskStatus.TODO);
@@ -52,7 +57,6 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public ResponseEntity<Map<String,Object>> changeStatus(TaskRequestStatusDto taskRequestStatusDto) {
-        Map<String ,Object> response = new HashMap<String , Object>();
         Task  task = taskRepository.findById(taskRequestStatusDto.getId()).orElseThrow(()->new RuntimeException("this task dosen't exist"));
         if (task.getEndDate().isBefore(LocalDate.now())){
             throw new RuntimeException("the time is already over");
@@ -66,9 +70,8 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public ResponseEntity<Map<String, Object>> assignTask(TaskAssigneDto taskAssigneDto) {
-        Map<String,Object> response = new HashMap<String ,Object>();
-        User assignTo = userService.findById(taskAssigneDto.getAssignedTo()).orElseThrow(()->new RuntimeException("this user doesn't exist"));
-        Task task= taskRepository.findById(taskAssigneDto.getTaskId()).orElseThrow(()->new RuntimeException("this task doesn't exist" ));
+        User assignTo = userService.findById(taskAssigneDto.getAssignedTo()).orElseThrow(()->new UserNotFoundException("this user doesn't exist"));
+        Task task= taskRepository.findById(taskAssigneDto.getTaskId()).orElseThrow(()->new TaskNotFoundException("this task doesn't exist" ));
         if(!task.getUser().equals(assignTo) && !task.getUser().isAdmin()){
             response.put("status","You Dont Have permission to  assign a task to another user");
             return ResponseEntity.badRequest().body(response);
@@ -81,7 +84,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
 //    @Scheduled(cron = "*/5 * * * * *")
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "0 0 0 * * *")
     public void checkTasks(){
         List<Task> taskList = taskRepository.findAll();
         for (Task task:taskList) {

@@ -12,15 +12,10 @@ import java.util.Optional;
 @Service
 public interface TaskService {
     ResponseEntity<Map<String ,Object>> addTask(TaskRequestDto taskRequestDto);
-
     List<TaskResponseDto> getAllTasks();
-
     ResponseEntity<Map<String,Object>> changeStatus(TaskRequestStatusDto taskRequestStatusDto);
-
     ResponseEntity<Map<String, Object>> assignTask(TaskAssigneDto taskAssigneDto);
     Optional<Task> findById(Long id);
-
     void save(Task replacementTask);
-
     void delete(Task task);
 }
